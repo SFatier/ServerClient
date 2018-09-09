@@ -20,6 +20,6 @@ void Joueur::setSocket(sf::TcpSocket* _socket) {
 	socket = _socket;
 }
 
-sf::TcpSocket* Joueur::getSocket() {
-	return socket;
+sf::TcpSocket& Joueur::getSocket() {
+	return *socket;
 }

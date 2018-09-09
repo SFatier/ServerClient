@@ -13,7 +13,7 @@ public:
 	std::string getPseudo();
 
 	void setSocket(sf::TcpSocket* _socket);
-	sf::TcpSocket* getSocket();
+	sf::TcpSocket& getSocket();
 
 private:
 	std::string pseudo;

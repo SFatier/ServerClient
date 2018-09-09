@@ -1,0 +1,6 @@
+﻿  Message.cpp
+  Jeu.cpp
+  Joueur.cpp
+  main.cpp
+  Génération de code en cours...
+sfml-network.lib(sfml-network-2.dll) : fatal error LNK1112: type d'ordinateur module 'x86' en conflit avec le type d'ordinateur cible 'x64'

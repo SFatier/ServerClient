@@ -3,9 +3,9 @@
 
 int main() {
 
-	Jeu partie;
+	Jeu partie(55001);
 
-	partie.AttendreJoueur();
+	partie.Loop();
 
 	return 0;
 	
