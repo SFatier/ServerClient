@@ -8,7 +8,7 @@ void Jeu::AttendreJoueur() {
 	const unsigned short port = 50001;
 	sf::TcpListener listener;
 	running = true;
-
+	string MessagePseudo;
 	sf::SocketSelector selector;
 
 	// Listen to the given port for incoming connections
@@ -35,12 +35,22 @@ void Jeu::AttendreJoueur() {
 					return;
 
 				if (_joueurs.size() == 2) {
-					string MessageClient = "La partie est complète";
+					string MessageClient = "La partie est complète. Le jeu peut commencer.";
 					client->send(MessageClient.c_str(), MessageClient.size());
+					int i = 0;
+					while (i < _joueurs.size())
+					{
+						std::cout << "Quel est votre pseudo ? ";
+						std::cin >> MessagePseudo;
+						_joueurs[i]->setPseudo(MessagePseudo);
+					
+					}
+
+
+
 					client->disconnect();
 					delete client; 
-				}
-				else {
+				}else {
 					_joueurs.push_back(new Joueur(client));
 					selector.add(*client);
 				}

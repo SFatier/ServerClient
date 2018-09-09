@@ -15,6 +15,8 @@ int main()
 	const char out[] = "Erreur connection! ";
 
 
+	server = "127.0.0.1";
+
 	if (socket.connect(server, port) != sf::Socket::Done){
 		return  -1;
 	}

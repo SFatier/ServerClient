@@ -13,5 +13,6 @@ public:
 private :
 	bool running;
 	std::vector<Joueur*> _joueurs; //tab de pointeur
+	std::vector<string*> _pseudoJoueurs; //tab de pseudo des joueurs
 	
 };

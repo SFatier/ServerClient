@@ -9,6 +9,12 @@ public:
 	Joueur(sf::TcpSocket* s);
 	~Joueur();
 
+	void setPseudo(std::string _pseudo);
+	std::string getPseudo();
+
+	void setSocket(sf::TcpSocket* _socket);
+	sf::TcpSocket* getSocket();
+
 private:
 	std::string pseudo;
 	sf::TcpSocket* socket;

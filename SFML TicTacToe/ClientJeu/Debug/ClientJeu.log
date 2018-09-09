@@ -1,2 +1,2 @@
 ﻿  Main.cpp
-LINK : fatal error LNK1104: impossible d'ouvrir le fichier 'gdi32.lib'
+  ClientJeu.vcxproj -> C:\Users\fatie\Desktop\ServerClient\SFML TicTacToe\Debug\ClientJeu.exe
