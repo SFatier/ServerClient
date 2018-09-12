@@ -5,6 +5,7 @@
 #include <SFML/Network.hpp>
 #include "Message.h"
 #include <string>
+#include <cstdlib>
 
 using namespace sf;
 using namespace std;
@@ -23,7 +24,10 @@ public:
 	void Loop();
 	void CreationJeu();
 	bool CheckPseudoJoueur();
-	//void AttendreJoueur();
+	void SendPseudoJoueur();
+	void ReponsePseudoJoueur(sf::Packet packet, Joueur* client);
+	void TourJoueur();
+	void DemandeTourJoueur(Joueur* client);
 
 
 private :

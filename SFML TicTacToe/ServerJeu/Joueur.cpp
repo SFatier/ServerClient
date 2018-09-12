@@ -11,7 +11,7 @@ void Joueur::setPseudo(std::string _pseudo) {
 	pseudo = _pseudo;
 }
 
-std::string Joueur::getPseudo() {
+std::string Joueur::getPseudo() const {
 	return pseudo;
 }
 

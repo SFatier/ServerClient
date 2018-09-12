@@ -10,7 +10,7 @@ public:
 	~Joueur();
 
 	void setPseudo(std::string _pseudo);
-	std::string getPseudo();
+	std::string getPseudo() const;
 
 	void setSocket(sf::TcpSocket* _socket);
 	sf::TcpSocket& getSocket();

@@ -62,6 +62,65 @@ using namespace sf;
 	*/
 
 
+void Jeu::SendPseudoJoueur() {
+	Message _message;
+
+	if (_joueurs.size() == 2)
+	{
+				_message.ResponsePseudo(_joueurs[0]->getPseudo());
+
+				sf::Socket::Status status = _joueurs[1]->getSocket().send(_message.getPacket());
+				if (status != sf::Socket::Done) {
+					 throw "Pseudo non envoyé au joueur" + _joueurs[1]->getPseudo();
+				}
+
+				
+				_message.ResponsePseudo(_joueurs[1]->getPseudo());
+
+				 status = _joueurs[0]->getSocket().send(_message.getPacket());
+				if (status != sf::Socket::Done) {
+					 throw "Pseudo non envoyé" + _joueurs[0]->getPseudo();
+				}
+	}
+	else {
+		 throw "nombre de joueurs invalide";
+	}
+}
+
+void Jeu::TourJoueur() {
+	
+}
+
+void Jeu::DemandeTourJoueur(Joueur* client) {
+	Message _messageTour;
+	bool hasPseudo = CheckPseudoJoueur();
+	
+	if (hasPseudo) {
+		srand((unsigned int)time(0));
+
+		int nb = rand() % 2;
+		_messageTour.DemandeTour();
+		if (nb == 1) {
+			_joueurs[1]->getSocket().send(_messageTour.getPacket());
+		}
+		else {
+			_joueurs[0]->getSocket().send(_messageTour.getPacket());
+		}
+	}
+}
+
+void Jeu::ReponsePseudoJoueur(sf::Packet packet, Joueur* client) {
+	std::string name;
+	packet >> name;
+
+	client->setPseudo(name);
+
+	bool hasPseudo = CheckPseudoJoueur();
+	if (hasPseudo) {
+		SendPseudoJoueur(); //envoye les pseudos a chaque joueur
+	}
+}
+
 //boucle du serveur
 void Jeu::Loop() {
 	Message message;
@@ -82,7 +141,7 @@ void Jeu::Loop() {
 		if (selector.wait())
 		{
 			// Test the listener
-			if (selector.isReady(listener))
+			if (selector.isReady(listener)) //ecoute les connections qui arrivent sur le socket de serveur
 			{
 				// The listener is ready: there is a pending connection
 				sf::TcpSocket* client = new sf::TcpSocket;
@@ -90,9 +149,6 @@ void Jeu::Loop() {
 				{
 					std::cout << "New client" << std::endl;
 
-					//std::string s = "Welcome to my server";
-					message.MakeWelcomeMessage("Welcome to my server");
-					client->send(message.getPacket());
 				
 					if (_joueurs.size() == 2) {
 						message.JeuComplet("La partie est complète");
@@ -105,6 +161,14 @@ void Jeu::Loop() {
 						delete client;
 					}
 					else {
+						MessageWelcome _msg_welcome;
+						_msg_welcome.id = MSG_WELCOME;
+						strcpy(_msg_welcome.msg, "Welcome to my server");
+
+						//message.MakeWelcomeMessage("Welcome to my server");
+						const char* buf = (char*)&_msg_welcome;
+						client->send(buf,sizeof(MessageWelcome)); //taile de la structure
+
 						_joueurs.push_back(new Joueur(client));
 
 						// Add the new client to the selector so that we will
@@ -121,7 +185,7 @@ void Jeu::Loop() {
 					delete client;
 				}
 			}
-			else
+			else //ecoute des clients
 			{
 				// The listener socket is not ready, test all other sockets (the clients)
 				for (std::vector<Joueur*>::iterator it = _joueurs.begin();
@@ -138,16 +202,21 @@ void Jeu::Loop() {
 								<< std::string((const char*)packet.getData(), packet.getDataSize())
 								<< " from " << client.getRemoteAddress() << std::endl;*/
 							int id = -1;
-							std::string name;
+							packet >> id ;
 
-							packet >> id >> name;
-							
-							client->setPseudo(name);
+							switch (id)
+							{
+								case MSG_RESPONSE_TOURS :
+									TourJoueur();
+									break;
 
-							bool hasPseudo = CheckPseudoJoueur();
-							if (hasPseudo) {
-								//envoie les id aux 2 joueurs.
-								//tour
+								case MSG_RESPONSE_PSEUDO:
+									ReponsePseudoJoueur(packet, client);
+									DemandeTourJoueur(client);
+									break;
+								case -1:
+									throw "id invalide";
+									break;
 							}
 
 						}
@@ -164,16 +233,22 @@ void Jeu::Loop() {
 }
 
 bool Jeu::CheckPseudoJoueur() {
-	for (std::vector<Joueur*>::const_iterator it = _joueurs.begin();
-		it != _joueurs.end(); ++it) {
-		Joueur* client = *it;
+	if (_joueurs.size() == 2)
+	{
+		for (std::vector<Joueur*>::const_iterator it = _joueurs.begin();
+			it != _joueurs.end(); ++it) {
+			Joueur* client = *it;
 
-		if (client->getPseudo().empty()) {
-			return false;
+			if (client->getPseudo().empty()) {
+				return false;
+			}
 		}
+		return true;
 	}
-	return true;
-}
+	else {
+		return false;
+	}
+	}
 
 Jeu::Jeu(int _port){
 	port = _port;

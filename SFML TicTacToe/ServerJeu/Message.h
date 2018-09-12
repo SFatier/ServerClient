@@ -11,10 +11,11 @@ public:
 
 	//& évite la recopie
 	sf::Packet& getPacket();
-	void MakeWelcomeMessage(const std::string str);
+	void MakeWelcomeMessage(const std::string& str);
 	void ResponsePseudo(const std::string str);
 	void DemandePseudo();
 	void JeuComplet(const std::string str);
+	void DemandeTour();
 
 private:
 	sf::Packet _packet;

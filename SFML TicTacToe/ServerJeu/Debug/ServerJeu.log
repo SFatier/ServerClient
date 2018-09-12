@@ -1,1 +1,8 @@
-﻿  ServerJeu.vcxproj -> C:\Users\fatie\Desktop\ServerClient\SFML TicTacToe\ServerJeu\Debug\Server2.exe
+﻿  Jeu.cpp
+c:\users\fatie\desktop\serverclient\sfml tictactoe\serverjeu\jeu.cpp(166): warning C4996: 'strcpy': This function or variable may be unsafe. Consider using strcpy_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+  c:\program files (x86)\windows kits\10\include\10.0.17134.0\ucrt\string.h(133): note: voir la déclaration de 'strcpy'
+  Joueur.cpp
+  main.cpp
+  Message.cpp
+  Génération de code en cours...
+  ServerJeu.vcxproj -> C:\Users\fatie\Desktop\ServerClient\SFML TicTacToe\ServerJeu\Debug\Serveur.exe
