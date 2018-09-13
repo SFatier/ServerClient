@@ -12,5 +12,4 @@ public:
 private:
 	Logger();
 	~Logger();
-
 };

@@ -6,11 +6,18 @@ Joueur::Joueur(sf::TcpSocket* s):socket(s)
 
 }
 
-void Joueur::setPseudo(const char* _pseudo) {
+Joueur::~Joueur() {
+}
+
+void Joueur::setPseudo(std::string _pseudo) {
 	pseudo = _pseudo;
 }
 
-const char* Joueur::getPseudo() {
+std::string Joueur::getPseudo() {
+	return pseudo;
+}
+
+std::string Joueur::getPseudo() const{
 	return pseudo;
 }
 
@@ -21,3 +28,18 @@ void Joueur::setSocket(sf::TcpSocket* _socket) {
 sf::TcpSocket& Joueur::getSocket() {
 	return *socket;
 }
+
+
+sf::TcpSocket& Joueur::getSocket() const {
+	return *socket;
+}
+
+void Joueur::setPion(Etat_case _pion) {
+	pion = _pion;
+}
+
+Etat_case Joueur::getPion() {
+	return pion;
+}
+
+

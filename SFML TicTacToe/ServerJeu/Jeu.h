@@ -12,12 +12,6 @@
 using namespace sf;
 using namespace std;
 
-enum Etat_case {
-	non_utilise,
-	etat_o,
-	etat_x
-};
-
 class Jeu {
 
 public:
@@ -29,15 +23,14 @@ public:
 	bool CheckPseudoJoueur();
 	void SendPseudoJoueur();
 	void ReponsePseudoJoueur(MessageWelcome* s, Joueur* client);
-	void TourJoueur();
-	void DemandeTourJoueur(Joueur* client);
+	void TourJoueur(Joueur* client, ReceptionCoup* r);
+	void DemandePremierTour(Joueur* client);
 
 
 private :
 	int port;
 	bool running;
 	std::vector<Joueur*> _joueurs; //tab de pointeur
-	std::vector<Etat_case> plateau_jeu;
-	//std::vector<string*> _pseudoJoueurs; //tab de pseudo des joueurs
-	
+	Etat_case plateau_jeu[3][3];
+
 };
