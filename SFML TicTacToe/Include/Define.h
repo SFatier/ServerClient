@@ -7,6 +7,7 @@
 #define  MSG_DEMANDE_PSEUDO 2
 #define  MSG_SCORE 3
 #define  MSG_COMPLET 6
+#define  MSG_ENVOI_PSEUDO 7
 
 //client
 #define MSG_RESPONSE_PSEUDO 4

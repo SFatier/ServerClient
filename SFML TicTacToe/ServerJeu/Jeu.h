@@ -2,6 +2,8 @@
 #include <vector>
 #include <list>
 #include "Joueur.h"
+#include "Logger.h"
+#include "Singleton.h"
 #include <SFML/Network.hpp>
 #include "Message.h"
 #include <string>
@@ -21,11 +23,12 @@ class Jeu {
 public:
 	Jeu(int _port);
 	~Jeu();
+	void Init();
 	void Loop();
 	void CreationJeu();
 	bool CheckPseudoJoueur();
 	void SendPseudoJoueur();
-	void ReponsePseudoJoueur(sf::Packet packet, Joueur* client);
+	void ReponsePseudoJoueur(MessageWelcome* s, Joueur* client);
 	void TourJoueur();
 	void DemandeTourJoueur(Joueur* client);
 

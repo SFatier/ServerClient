@@ -152,6 +152,7 @@
   <ItemGroup>
     <ClCompile Include="Jeu.cpp" />
     <ClCompile Include="Joueur.cpp" />
+    <ClCompile Include="Logger.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Message.cpp" />
   </ItemGroup>
@@ -159,7 +160,9 @@
     <ClInclude Include="..\Include\Define.h" />
     <ClInclude Include="Jeu.h" />
     <ClInclude Include="Joueur.h" />
+    <ClInclude Include="Logger.h" />
     <ClInclude Include="Message.h" />
+    <ClInclude Include="Singleton.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

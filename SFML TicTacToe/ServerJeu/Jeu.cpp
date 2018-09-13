@@ -3,92 +3,40 @@
 using namespace std;
 using namespace sf;
 
-//attendrejoueur
-/*void Jeu::AttendreJoueur() {
-	const unsigned short port = 50001;
-	sf::TcpListener listener;
-	running = true;
-	string MessagePseudo;
-	sf::SocketSelector selector;
-
-	// Listen to the given port for incoming connections
-	if (listener.listen(port) != sf::Socket::Done)
-		return;
-	std::cout << "Server is listening to port " << port << ", waiting for connections... " << std::endl;
-
-	selector.add(listener);
-
-	while (running) {
-
-		selector.wait();
-		if (selector.isReady(listener)) {
-			sf::TcpSocket *client = new sf::TcpSocket;
-
-			if (listener.accept(*client) == sf::Socket::Done) {
-				std::cout << "Client connected: " << client->getRemoteAddress() << std::endl;
-
-				//std::string welcomeMessage = " TicTacToe Server 1.0";
-				Message message_welcome;
-				message_welcome.MakeWelcomeMessage(" TicTacToe Server 1.0");
-
-				sf::Socket::Status status = client->send(message_welcome.getPacket());
-				if (status != sf::Socket::Done)
-					return;
-
-				if (_joueurs.size() == 2) {
-					string MessageClient = "La partie est complète. Le jeu peut commencer.";
-					client->send(MessageClient.c_str(), MessageClient.size());
-					int i = 0;
-					/*while (i < _joueurs.size())
-					{
-						std::cout << "Quel est votre pseudo ? ";
-						std::cin >> MessagePseudo;
-						_joueurs[i]->setPseudo(MessagePseudo);
-					
-					}
-
-					client->disconnect();
-					delete client; 
-				}else {
-					_joueurs.push_back(new Joueur(client));
-					selector.add(*client);
-				}
-			}
-		}
-		else {
-
-		}
-	}
-	*/
-
 
 void Jeu::SendPseudoJoueur() {
 	Message _message;
 
 	if (_joueurs.size() == 2)
 	{
-				_message.ResponsePseudo(_joueurs[0]->getPseudo());
+				const char* buf = _message.MakeMessage(_joueurs[0]->getPseudo(), MSG_ENVOI_PSEUDO);
 
-				sf::Socket::Status status = _joueurs[1]->getSocket().send(_message.getPacket());
+				sf::Socket::Status status = _joueurs[1]->getSocket().send(buf, sizeof(MessageWelcome));
 				if (status != sf::Socket::Done) {
-					 throw "Pseudo non envoyé au joueur" + _joueurs[1]->getPseudo();
+					std::string pseudo_joueur = _joueurs[1]->getPseudo();
+					Logger::Logger::log("Pseudo non envoyé au joueur" + pseudo_joueur);
 				}
 
 				
-				_message.ResponsePseudo(_joueurs[1]->getPseudo());
+				buf =_message.MakeMessage(_joueurs[1]->getPseudo(), MSG_ENVOI_PSEUDO);
 
-				 status = _joueurs[0]->getSocket().send(_message.getPacket());
+				 status = _joueurs[0]->getSocket().send(buf, sizeof(MessageWelcome));
 				if (status != sf::Socket::Done) {
-					 throw "Pseudo non envoyé" + _joueurs[0]->getPseudo();
+					string pseudo_joueur = _joueurs[0]->getPseudo();
+					Logger::Logger::log("Pseudo non envoyé" + pseudo_joueur);
 				}
 	}
 	else {
-		 throw "nombre de joueurs invalide";
+		Logger::Logger::log("nombre de joueurs invalide");
 	}
 }
 
 void Jeu::TourJoueur() {
 	
+}
+
+void Jeu::Init() {
+	Logger::Logger::log("Connection Serveur");
 }
 
 void Jeu::DemandeTourJoueur(Joueur* client) {
@@ -99,20 +47,18 @@ void Jeu::DemandeTourJoueur(Joueur* client) {
 		srand((unsigned int)time(0));
 
 		int nb = rand() % 2;
-		_messageTour.DemandeTour();
+		const char* buff = _messageTour.MakeMessage("A vous de jouer", MSG_DEMANDE_TOURS);
 		if (nb == 1) {
-			_joueurs[1]->getSocket().send(_messageTour.getPacket());
+			_joueurs[1]->getSocket().send(buff, sizeof(MessageWelcome));
 		}
 		else {
-			_joueurs[0]->getSocket().send(_messageTour.getPacket());
+			_joueurs[0]->getSocket().send(buff, sizeof(MessageWelcome));
 		}
 	}
 }
 
-void Jeu::ReponsePseudoJoueur(sf::Packet packet, Joueur* client) {
-	std::string name;
-	packet >> name;
-
+void Jeu::ReponsePseudoJoueur(MessageWelcome* s, Joueur* client) {
+	const char* name = s->msg;
 	client->setPseudo(name);
 
 	bool hasPseudo = CheckPseudoJoueur();
@@ -124,112 +70,92 @@ void Jeu::ReponsePseudoJoueur(sf::Packet packet, Joueur* client) {
 //boucle du serveur
 void Jeu::Loop() {
 	Message message;
+	const char* buf = "";
 
 	// Create a socket to listen to new connection
 	sf::TcpListener listener; listener.listen(port);
 
-	// Create a selector
 	sf::SocketSelector selector;
 
-	// Add the listener to the selector
 	selector.add(listener);
 
-	// Endless loop that waits for new connections
 	while (running)
 	{
-		// Make the selector wait for data on any socket
 		if (selector.wait())
 		{
-			// Test the listener
 			if (selector.isReady(listener)) //ecoute les connections qui arrivent sur le socket de serveur
 			{
-				// The listener is ready: there is a pending connection
 				sf::TcpSocket* client = new sf::TcpSocket;
 				if (listener.accept(*client) == sf::Socket::Done)
 				{
-					std::cout << "New client" << std::endl;
-
-				
+					Logger::Logger::log("Nouveau client connecté");
+									
 					if (_joueurs.size() == 2) {
-						message.JeuComplet("La partie est complète");
-						sf::Socket::Status status = client->send(message.getPacket());
+						buf = message.MakeMessage("La partie est complète", MSG_COMPLET);
+						sf::Socket::Status status = client->send(buf, sizeof(MessageWelcome));
 						if (status != sf::Socket::Done) {
-							return throw "Le client n'a pas reçu le message.";
+							Logger::Logger::log("Le client n'a pas reçu le message.");
 						}
 
 						client->disconnect();
 						delete client;
 					}
 					else {
-						MessageWelcome _msg_welcome;
-						_msg_welcome.id = MSG_WELCOME;
-						strcpy(_msg_welcome.msg, "Welcome to my server");
-
-						//message.MakeWelcomeMessage("Welcome to my server");
-						const char* buf = (char*)&_msg_welcome;
+						
+						buf = message.MakeMessage("Welcome to my server", MSG_WELCOME);
 						client->send(buf,sizeof(MessageWelcome)); //taile de la structure
 
 						_joueurs.push_back(new Joueur(client));
 
-						// Add the new client to the selector so that we will
-						// be notified when he sends something
 						selector.add(*client);
-						message.DemandePseudo();
-						client->send(message.getPacket());
+						buf = message.MakeMessage("Puis-je avoir votre pseudo ?", MSG_DEMANDE_PSEUDO);
+						client->send(buf, sizeof(MessageWelcome));
 
 					}
 				}
 				else
 				{
-					// Error, we won't get a new connection, delete the socket
 					delete client;
 				}
 			}
 			else //ecoute des clients
 			{
-				// The listener socket is not ready, test all other sockets (the clients)
 				for (std::vector<Joueur*>::iterator it = _joueurs.begin();
 					it != _joueurs.end(); ++it)
 				{
 					Joueur* client = *it;
 					if (selector.isReady(client->getSocket()))
 					{
-						// The client has sent some data, we can receive it
-						sf::Packet packet;
-						if (client->getSocket().receive(packet) == sf::Socket::Done)
+						//sf::Packet packet;
+						char buf[255];
+						size_t received;
+						if (client->getSocket().receive(buf, 255, received) == sf::Socket::Done)
 						{
-							/*std::cout << "Recu: "
-								<< std::string((const char*)packet.getData(), packet.getDataSize())
-								<< " from " << client.getRemoteAddress() << std::endl;*/
 							int id = -1;
-							packet >> id ;
+							//packet >> id ;
+							MessageWelcome* s = (MessageWelcome*)& buf;
 
-							switch (id)
+							switch (s->id)
 							{
 								case MSG_RESPONSE_TOURS :
 									TourJoueur();
 									break;
 
 								case MSG_RESPONSE_PSEUDO:
-									ReponsePseudoJoueur(packet, client);
+									ReponsePseudoJoueur(s, client);
 									DemandeTourJoueur(client);
 									break;
 								case -1:
-									throw "id invalide";
+									Logger::Logger::log("id invalide");
 									break;
 							}
 
 						}
 					}
 				}
-
-
-
 			}
 		}
 	}
-
-
 }
 
 bool Jeu::CheckPseudoJoueur() {
@@ -239,7 +165,7 @@ bool Jeu::CheckPseudoJoueur() {
 			it != _joueurs.end(); ++it) {
 			Joueur* client = *it;
 
-			if (client->getPseudo().empty()) {
+			if (client->getPseudo() == "") {
 				return false;
 			}
 		}
@@ -248,11 +174,10 @@ bool Jeu::CheckPseudoJoueur() {
 	else {
 		return false;
 	}
-	}
+}
 
 Jeu::Jeu(int _port){
 	port = _port;
-
 }
 
 void Jeu::CreationJeu() {
