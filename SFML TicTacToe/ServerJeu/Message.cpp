@@ -8,24 +8,27 @@ Message::~Message()
 {
 }
 
-//MessageWelcome Message::getMessagewelcome() {
-//	return _msg_welcome;
-//}
 
-const char* Message::MakeMessage(const char* str, int id) {
-	MessageWelcome _msg_welcome;
-	char* buffer = new char[255];
+const char* Message::MakeMessage(const std::string &str, int id) {
+	MessageTexte _msg_welcome;
+	char* buffer = new char[sizeof(MessageTexte)];
+	if (str.size() >= 128) {
+		Logger::getInstance().log("MakeMessage => taille message trop long");
+		strncpy(buffer, str.c_str(), 128);
+	}
+	else {
+		strcpy(_msg_welcome.msg, str.c_str());
+	}
 
 	_msg_welcome.id = id;
-	strcpy(_msg_welcome.msg, str);
 
-	memcpy(buffer,&_msg_welcome, sizeof(MessageWelcome));
+	memcpy(buffer,&_msg_welcome, sizeof(MessageTexte));
 	return buffer;
 }
 
 const char* Message::MakeReceptionCoup(int id, int x, int y) {
 	ReceptionCoup _rcp_coup;
-	char* buffer = new char[255];
+	char* buffer = new char[sizeof(ReceptionCoup)];
 
 	_rcp_coup.id = id;
 	_rcp_coup.coordonneeX = x;
@@ -35,23 +38,3 @@ const char* Message::MakeReceptionCoup(int id, int x, int y) {
 	return buffer;
 }
 
-//void Message::ResponsePseudo(const std::string str) {
-//	//_packet.clear();
-//	//_packet << (int)MSG_RESPONSE_PSEUDO << str;
-//
-//}
-//
-//void Message::JeuComplet(const std::string str) {
-//	_packet.clear();
-//	_packet << (int)MSG_COMPLET;
-//}
-//
-//void Message::DemandeTour() {
-//	_packet.clear();
-//	_packet << (int)MSG_DEMANDE_TOURS;
-//}
-//
-//void Message::DemandePseudo() {
-//	_packet.clear();
-//	_packet << (int)MSG_DEMANDE_PSEUDO;
-//}

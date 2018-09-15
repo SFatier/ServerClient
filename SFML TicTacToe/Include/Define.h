@@ -20,13 +20,14 @@
 enum Etat_case {
 	etat_non_utilise,
 	etat_o,
-	etat_x
+	etat_x,
+	etat_egalite
 };
 
 
 #pragma pack(push, 1) 
 
-struct MessageWelcome {
+struct MessageTexte {
 	char id;
 	char msg[128];
 };

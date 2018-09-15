@@ -8,6 +8,7 @@
 #include "Message.h"
 #include <string>
 #include <cstdlib>
+#include <sstream>
 
 using namespace sf;
 using namespace std;
@@ -22,10 +23,15 @@ public:
 	void CreationJeu();
 	bool CheckPseudoJoueur();
 	void SendPseudoJoueur();
-	void ReponsePseudoJoueur(MessageWelcome* s, Joueur* client);
+	void ReponsePseudoJoueur(MessageTexte* s, Joueur* client);
 	void TourJoueur(Joueur* client, ReceptionCoup* r);
 	void DemandePremierTour(Joueur* client);
-
+	Etat_case JeuGagnant();
+	void MakeMessageGagant(Etat_case pion_gagnant);
+	void SendMessageVictoire(Etat_case pion);
+	void SendMessageEgalite();
+	void AffichePlateau();
+	char drawPos(int x, int y);
 
 private :
 	int port;
